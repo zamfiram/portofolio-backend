@@ -49,6 +49,66 @@ app.post('/api/email', (req, res, next) => {
 
 //routes projets
 
+//récupérer un projet - GET
+app.get('/:id', (req, res) => {
+    const projectId = req.params.id;
+    connection.query('SELECT * FROM projects WHERE id = ?', [projectId], (err, results) => {
+      if (err) {
+        res.status(500).send(`An error occurred: ${err.message}`);
+      } else if (results.length === 0) {
+        res.status(404).send("Project not found");
+      } else {
+        res.json(results[0]);
+      }
+    });
+  });
+
+  //create a project - POST
+  app.post("/:id", (req, res) => {
+    const formData = req.body;
+    connection.query("INSERT INTO projects SET ?", formData, (err, results) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Creation of a new project failed");
+      } else {
+        res.sendStatus(200);
+      }
+    });
+  });
+
+  //update/replace a project - PUT
+  app.put("/:id", (req, res) => {
+    const idProject = req.params.id;
+    const formData = req.body;
+  
+    connection.query(
+      "UPDATE projects SET ? WHERE id = ?",
+      [formData, idProject],
+      err => {
+        if (err) {
+          console.log(err);
+          res.status(500).send("Project edit failed");
+        } else {
+          res.sendStatus(200);
+        }
+      }
+    );
+  });
+
+  //delete a project - DELETE
+  app.delete("/:id", (req, res) => {
+    const idProject = req.params.id;
+  
+    connection.query("DELETE FROM projects WHERE id = ?", [idProject], err => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Project removal failed");
+      } else {
+        res.sendStatus(200);
+      }
+    });
+  });
+
 //routes about
 
 app.listen(3030, '0.0.0.0');

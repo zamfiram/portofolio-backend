@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const sendgrid = require('@sendgrid/mail');
+const connection = require("./db");
+
 
 const app = express();
 
@@ -12,7 +14,7 @@ app.use(cors());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-    res.setHeader('Acces s-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
 
@@ -49,7 +51,7 @@ app.post('/api/email', (req, res, next) => {
 
 //routes projets
 //récupérer un projet - GET
-app.get('/:id', (req, res) => {
+app.get('/projects/:id', (req, res) => {
     const projectId = req.params.id;
     connection.query('SELECT * FROM projects WHERE id = ?', [projectId], (err, results) => {
       if (err) {
@@ -63,7 +65,7 @@ app.get('/:id', (req, res) => {
   });
 
   //create a project - POST
-  app.post("/:id", (req, res) => {
+  app.post("/projects/:id", (req, res) => {
     const formData = req.body;
     connection.query("INSERT INTO projects SET ?", formData, (err, results) => {
       if (err) {
@@ -76,7 +78,7 @@ app.get('/:id', (req, res) => {
   });
 
   //update/replace a project - PUT
-  app.put("/:id", (req, res) => {
+  app.put("/projects/:id", (req, res) => {
     const idProject = req.params.id;
     const formData = req.body;
   
@@ -95,7 +97,7 @@ app.get('/:id', (req, res) => {
   });
 
   //delete a project - DELETE
-  app.delete("/:id", (req, res) => {
+  app.delete("/projects/:id", (req, res) => {
     const idProject = req.params.id;
   
     connection.query("DELETE FROM projects WHERE id = ?", [idProject], err => {

@@ -48,7 +48,6 @@ app.post('/api/email', (req, res, next) => {
 });
 
 //routes projets
-
 //récupérer un projet - GET
 app.get('/:id', (req, res) => {
     const projectId = req.params.id;
@@ -110,5 +109,65 @@ app.get('/:id', (req, res) => {
   });
 
 //routes about
+//récupérer le texte about - GET
+app.get('/about/:id', (req, res) => {
+    const aboutId = req.params.id;
+    connection.query('SELECT * FROM about WHERE id = ?', [aboutId], (err, results) => {
+      if (err) {
+        res.status(500).send(`An error occurred: ${err.message}`);
+      } else if (results.length === 0) {
+        res.status(404).send("Description not found");
+      } else {
+        res.json(results[0]);
+      }
+    });
+  });
 
-app.listen(3030, '0.0.0.0');
+  //create another about section - POST
+  app.post("/about/:id", (req, res) => {
+    const formData = req.body;
+    connection.query("INSERT INTO about SET ?", formData, (err, results) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Creation of a new description failed");
+      } else {
+        res.sendStatus(200);
+      }
+    });
+  });
+
+  //update about section - PUT
+  app.put("/about/:id", (req, res) => {
+    const idAbout = req.params.id;
+    const formData = req.body;
+  
+    connection.query(
+      "UPDATE about SET ? WHERE id = ?",
+      [formData, idAbout],
+      err => {
+        if (err) {
+          console.log(err);
+          res.status(500).send("About edit failed");
+        } else {
+          res.sendStatus(200);
+        }
+      }
+    );
+  });
+
+  //delete the about section - DELETE
+  app.delete("/about/:id", (req, res) => {
+    const idAbout = req.params.id;
+  
+    connection.query("DELETE FROM about WHERE id = ?", [idAbout], err => {
+      if (err) {
+        console.log(err);
+        res.status(500).send("About section removal failed");
+      } else {
+        res.sendStatus(200);
+      }
+    });
+  });
+
+
+app.listen(5000, '0.0.0.0');

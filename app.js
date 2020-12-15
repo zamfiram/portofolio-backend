@@ -54,6 +54,21 @@ app.post("/api/email", (req, res, next) => {
 
 //routes projets
 //récupérer un projet - GET
+app.get(`/projects`, (req, res) => {
+  connection.query(
+    "SELECT * FROM projects ORDER BY id DESC",
+    (err, results) => {
+      if (err) {
+        res.status(500).send(`An error occurred: ${err.message}`);
+      } else if (results.length === 0) {
+        res.status(404).send("Projects not found");
+      } else {
+        res.json(results);
+      }
+    }
+  );;
+});
+
 app.get("/projects/:id", (req, res) => {
   const projectId = req.params.id;
   connection.query(
